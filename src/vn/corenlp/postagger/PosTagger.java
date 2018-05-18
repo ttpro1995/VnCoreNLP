@@ -3,7 +3,7 @@ package vn.corenlp.postagger;
 import marmot.morph.MorphTagger;
 import marmot.morph.Sentence;
 import marmot.morph.Word;
-
+import marmot.core.Sequence;
 import marmot.util.FileUtils;
 import org.apache.log4j.Logger;
 
@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PosTagger {
-    private static PosTagger posTagger = null;
+    // private static PosTagger posTagger = null;
     private MorphTagger tagger;
     public final static Logger LOGGER = Logger.getLogger(PosTagger.class);
     public PosTagger() throws IOException {
@@ -25,11 +25,13 @@ public class PosTagger {
 
     }
 
+    /**
+     * mod: suppress singleton
+     * @return
+     * @throws IOException 
+     */
     public static PosTagger initialize() throws IOException {
-        if(posTagger == null) {
-            posTagger = new PosTagger();
-        }
-        return posTagger;
+        return new PosTagger();
     }
 
     public List<vn.pipeline.Word> tagSentence(String sentence) throws IOException {

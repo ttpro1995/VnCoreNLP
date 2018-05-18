@@ -20,12 +20,15 @@ import java.util.List;
 public class NerRecognizer {
     private NLPDecoder nlpDecoder ;
     public final static Logger LOGGER = Logger.getLogger(NerRecognizer.class);
-    private static NerRecognizer nerRecognizer;
+    // private static NerRecognizer nerRecognizer;
+    
+    /**
+     * mod: suppress singleton
+     * @return
+     * @throws IOException 
+     */
     public static NerRecognizer initialize() throws IOException{
-        if(nerRecognizer == null) {
-            nerRecognizer = new NerRecognizer();
-        }
-        return nerRecognizer;
+        return new NerRecognizer();
     }
 
 

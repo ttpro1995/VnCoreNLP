@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class WordSegmenter {
     private  Node root;
-    private static WordSegmenter wordSegmenter = null;
+    // private static WordSegmenter wordSegmenter = null;
     public final static Logger LOGGER = Logger.getLogger(WordSegmenter.class);
     public WordSegmenter()
             throws IOException {
@@ -29,11 +29,13 @@ public class WordSegmenter {
         this.constructTreeFromRulesFile(modelPath);
     }
 
+    /**
+     * mod: supress singleton
+     * @return
+     * @throws IOException 
+     */
     public static WordSegmenter initialize() throws IOException {
-        if(wordSegmenter == null) {
-            wordSegmenter = new WordSegmenter();
-        }
-        return wordSegmenter;
+        return new WordSegmenter();
     }
     private void constructTreeFromRulesFile(String rulesFilePath)
             throws IOException {

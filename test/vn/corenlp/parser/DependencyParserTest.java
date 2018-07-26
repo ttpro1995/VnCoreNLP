@@ -69,8 +69,9 @@ public class DependencyParserTest {
         DependencyParser parser = new DependencyParser();
         parser.tagSentence(sentenceWords);
         for (Word w: sentenceWords){
-            System.out.println(w.toString());
+            System.out.println(w.toString());  
         }
+        
     }
 
     /**

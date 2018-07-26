@@ -10,6 +10,7 @@ import vn.pipeline.Word;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +29,10 @@ public class DependencyParser {
         LOGGER.info("Loading Dependency Parsing model");
         nlpDecoder = new NLPDecoder();
         List<NLPComponent<NLPNode>> components = new ArrayList();
-        String modelPath = System.getProperty("user.dir") + "/models/dep/vi-dep.xz";
-        if (!new File(modelPath).exists()) throw new IOException("DependencyParser: " + modelPath + " is not found!");
-        components.add(NLPUtils.getComponent(modelPath));
+        InputStream modelFile = getClass().getClassLoader().getResourceAsStream("dep/vi-dep.xz");
+        // String modelPath = System.getProperty("user.dir") + "/models/dep/vi-dep.xz";
+        // if (!new File(modelPath).exists()) throw new IOException("DependencyParser: " + modelPath + " is not found!");
+        components.add(NLPUtils.getComponent(modelFile));
         nlpDecoder.setComponents(components);
 
     }

@@ -16,27 +16,33 @@ import java.util.List;
  * @author DatQuocNguyen
  */
 public class WordSegmenter {
-    private  Node root;
+
+    private Node root;
     // private static WordSegmenter wordSegmenter = null;
     public final static Logger LOGGER = Logger.getLogger(WordSegmenter.class);
+
     public WordSegmenter()
             throws IOException {
         LOGGER.info("Loading WordSegmenter");
-        String modelPath = System.getProperty("user.dir") + "/models/wordsegmenter/wordsegmenter.rdr";
-        if (!new File(modelPath).exists())
-            throw new IOException("WordSegmenter: " + modelPath + " is not found!");
+        File inputFile = new File(getClass().getClassLoader().getResource("wordsegmenter/wordsegmenter.rdr").getFile());
+//        String modelPath = System.getProperty("user.dir") + "/models/wordsegmenter/wordsegmenter.rdr";
+//        if (!new File(inputFile).exists()) {
+//            throw new IOException("WordSegmenter: " + modelPath + " is not found!");
+//        }
 
-        this.constructTreeFromRulesFile(modelPath);
+        this.constructTreeFromRulesFile(inputFile);
     }
 
     /**
      * mod: supress singleton
+     *
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public static WordSegmenter initialize() throws IOException {
         return new WordSegmenter();
     }
+
     private void constructTreeFromRulesFile(String rulesFilePath)
             throws IOException {
         BufferedReader buffer = new BufferedReader(
@@ -48,22 +54,25 @@ public class WordSegmenter {
         Node currentNode = this.root;
         int currentDepth = 0;
 
-        for (; (line = buffer.readLine()) != null; ) {
+        for (; (line = buffer.readLine()) != null;) {
             int depth = 0;
             for (int i = 0; i <= 6; i++) { // Supposed that the maximum
                 // exception level is up to 6.
-                if (line.charAt(i) == '\t')
+                if (line.charAt(i) == '\t') {
                     depth += 1;
-                else
+                } else {
                     break;
+                }
             }
 
             line = line.trim();
-            if (line.length() == 0)
+            if (line.length() == 0) {
                 continue;
+            }
 
-            if (line.contains("cc:"))
+            if (line.contains("cc:")) {
                 continue;
+            }
 
             FWObject condition = Utils.getCondition(line.split(" : ")[0].trim());
             String conclusion = Utils.getConcreteValue(line.split(" : ")[1].trim());
@@ -75,8 +84,68 @@ public class WordSegmenter {
             } else if (depth == currentDepth) {
                 currentNode.setIfnotNode(node);
             } else {
-                while (currentNode.getDepth() != depth)
+                while (currentNode.getDepth() != depth) {
                     currentNode = currentNode.getFatherNode();
+                }
+                currentNode.setIfnotNode(node);
+            }
+            node.setFatherNode(currentNode);
+
+            currentNode = node;
+            currentDepth = depth;
+        }
+        buffer.close();
+    }
+
+    /**
+     * 
+     * @param rulesFilePath use file instead of path
+     * @throws IOException 
+     */
+    private void constructTreeFromRulesFile(File rulesFilePath)
+            throws IOException {
+        BufferedReader buffer = new BufferedReader(
+                new InputStreamReader(new FileInputStream(rulesFilePath), "UTF-8"));
+        String line = buffer.readLine();
+
+        this.root = new Node(new FWObject(false), "NN", null, null, null, 0);
+
+        Node currentNode = this.root;
+        int currentDepth = 0;
+
+        for (; (line = buffer.readLine()) != null;) {
+            int depth = 0;
+            for (int i = 0; i <= 6; i++) { // Supposed that the maximum
+                // exception level is up to 6.
+                if (line.charAt(i) == '\t') {
+                    depth += 1;
+                } else {
+                    break;
+                }
+            }
+
+            line = line.trim();
+            if (line.length() == 0) {
+                continue;
+            }
+
+            if (line.contains("cc:")) {
+                continue;
+            }
+
+            FWObject condition = Utils.getCondition(line.split(" : ")[0].trim());
+            String conclusion = Utils.getConcreteValue(line.split(" : ")[1].trim());
+
+            Node node = new Node(condition, conclusion, null, null, null, depth);
+
+            if (depth > currentDepth) {
+                currentNode.setExceptNode(node);
+            } else if (depth == currentDepth) {
+                currentNode.setIfnotNode(node);
+            } else {
+                while (currentNode.getDepth() != depth) {
+                    currentNode = currentNode.getFatherNode();
+                }
                 currentNode.setIfnotNode(node);
             }
             node.setFatherNode(currentNode);
@@ -111,13 +180,14 @@ public class WordSegmenter {
         return firedN;
     }
 
-    private List<WordTag> getInitialSegmentation(String sentence)
-    {
+    private List<WordTag> getInitialSegmentation(String sentence) {
         List<WordTag> wordtags = new ArrayList<>();
 
-        for (String regex : Utils.NORMALIZER_KEYS)
-            if (sentence.contains(regex))
+        for (String regex : Utils.NORMALIZER_KEYS) {
+            if (sentence.contains(regex)) {
                 sentence = sentence.replaceAll(regex, Utils.NORMALIZER.get(regex));
+            }
+        }
 
         List<String> tokens = Arrays.asList(sentence.split("\\s+"));
         List<String> lowerTokens = Arrays.asList(sentence.toLowerCase().split("\\s+"));
@@ -143,8 +213,9 @@ public class WordSegmenter {
                             || Vocabulary.VN_LOCATIONS.contains(word) || Vocabulary.COUNTRY_L_NAME.contains(word)) {
 
                         wordtags.add(new WordTag(token, "B"));
-                        for (int k = i + 1; k < j; k++)
+                        for (int k = i + 1; k < j; k++) {
                             wordtags.add(new WordTag(tokens.get(k), "I"));
+                        }
 
                         i = j - 1;
 
@@ -189,19 +260,19 @@ public class WordSegmenter {
                                 }
                             }
                         }
-                        if (isNotMiddleName)
+                        if (isNotMiddleName) {
                             wordtags.add(new WordTag(token, "B"));
-                        for (int k = i + 1; k < ilower; k++)
+                        }
+                        for (int k = i + 1; k < ilower; k++) {
                             wordtags.add(new WordTag(tokens.get(k), "I"));
+                        }
 
                         i = ilower - 1;
-                    }
-                    else {
+                    } else {
                         wordtags.add(new WordTag(token, "B"));
                     }
                 }
-            }
-            else {
+            } else {
                 wordtags.add(new WordTag(token, "B"));
             }
 
@@ -228,20 +299,20 @@ public class WordSegmenter {
             FWObject object = Utils.getObject(wordtags, size, i);
             Node firedNode = findFiredNode(object);
             if (firedNode.getDepth() > 0) {
-                if (firedNode.getConclusion().equals("B"))
+                if (firedNode.getConclusion().equals("B")) {
                     sb.append(" " + wordtags.get(i).form);
-                else
+                } else {
                     sb.append("_" + wordtags.get(i).form);
-            }
-            else {// Fired at root, return initialized tag
-                if (wordtags.get(i).tag.equals("B"))
+                }
+            } else {// Fired at root, return initialized tag
+                if (wordtags.get(i).tag.equals("B")) {
                     sb.append(" " + wordtags.get(i).form);
-                else
+                } else {
                     sb.append("_" + wordtags.get(i).form);
+                }
             }
         }
         return sb.toString().trim();
     }
 
 }
-

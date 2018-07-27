@@ -19,11 +19,11 @@ public class PosTagger {
     public final static Logger LOGGER = Logger.getLogger(PosTagger.class);
     public PosTagger() throws IOException {
         LOGGER.info("Loading POS Tagging model");
-//        String modelPath = System.getProperty("user.dir") + "/models/postagger/vi-tagger";
-//        if (!new File(modelPath).exists()) throw new IOException("PosTagger: " + modelPath + " is not found!");
-//        tagger = FileUtils.loadFromFile(modelPath);
-        File modelFile = new File(getClass().getClassLoader().getResource("postagger/vi-tagger").getFile());
-        tagger = FileUtils.loadFromFile(modelFile);
+        String modelPath = System.getProperty("user.dir") + "/models/postagger/vi-tagger";
+        if (!new File(modelPath).exists()) throw new IOException("PosTagger: " + modelPath + " is not found!");
+        tagger = FileUtils.loadFromFile(modelPath);
+//        File modelFile = new File(getClass().getClassLoader().getResource("postagger/vi-tagger").getFile());
+//        tagger = FileUtils.loadFromFile(modelFile);
     }
 
     /**

@@ -29,10 +29,10 @@ public class DependencyParser {
         LOGGER.info("Loading Dependency Parsing model");
         nlpDecoder = new NLPDecoder();
         List<NLPComponent<NLPNode>> components = new ArrayList();
-        InputStream modelFile = getClass().getClassLoader().getResourceAsStream("dep/vi-dep.xz");
-        // String modelPath = System.getProperty("user.dir") + "/models/dep/vi-dep.xz";
-        // if (!new File(modelPath).exists()) throw new IOException("DependencyParser: " + modelPath + " is not found!");
-        components.add(NLPUtils.getComponent(modelFile));
+//        InputStream modelFile = getClass().getClassLoader().getResourceAsStream("dep/vi-dep.xz");
+         String modelPath = System.getProperty("user.dir") + "/models/dep/vi-dep.xz";
+         if (!new File(modelPath).exists()) throw new IOException("DependencyParser: " + modelPath + " is not found!");
+        components.add(NLPUtils.getComponent(modelPath));
         nlpDecoder.setComponents(components);
 
     }

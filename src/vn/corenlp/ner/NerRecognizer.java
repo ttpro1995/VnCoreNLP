@@ -38,14 +38,14 @@ public class NerRecognizer {
         nlpDecoder = new NLPDecoder();
         List<NLPComponent<NLPNode>> components = new ArrayList();
 
-//        String modelPath = System.getProperty("user.dir") + "/models/ner/vi-ner.xz";
-        InputStream modelFile = getClass().getClassLoader().getResourceAsStream("ner/vi-ner.xz");
-//        if (!new File(modelPath).exists()) throw new IOException("NerRecognizer: " + modelPath + " is not found!");
+        String modelPath = System.getProperty("user.dir") + "/models/ner/vi-ner.xz";
+//        InputStream modelFile = getClass().getClassLoader().getResourceAsStream("ner/vi-ner.xz");
+        if (!new File(modelPath).exists()) throw new IOException("NerRecognizer: " + modelPath + " is not found!");
         GlobalLexica lexica = LexicalInitializer.initialize(true).initializeLexica();
         if(lexica != null) {
             components.add(lexica);
         }
-        components.add(NLPUtils.getComponent(modelFile));
+        components.add(NLPUtils.getComponent(modelPath));
         nlpDecoder.setComponents(components);
 
     }
